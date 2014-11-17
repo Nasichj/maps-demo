@@ -21,11 +21,43 @@ $(document).ready(function() {
             map: map,
             animation: google.maps.Animation.DROP
         });
-    }
+
+        var infoWindow = new google.maps.InfoWindow();
+        infoWindow.setContent('<h2>Here I am!</h2>');
+
+        google.maps.event.addListener(marker, 'click', function() {
+            //consolelog('marker clicked!');
+            infoWindow.open(map, marker);
+            map.panTo(marker.getPosition());
+
+        });
+    }//create map
+
+    function onGeoSuccess(position) {
+        var center = {
+            lat: position.coords.latitude,
+            lng:position.coords.longitude
+        };
+
+        createMap(center, 14);
+    }//onGeoSuccess
+
+    function onGeoError(error) {
+        console.log(error);
+    }//on GeoError
 
     var uwCoords = {
         lat: 20.8,
         lng: -156.333
     };
-    createMap(uwCoords, 10);
-});//on doc ready
+
+
+    if (navigator && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError, {
+            enableHighAccuracy: true
+        });
+    }
+    else {
+        createMap(uwCoords, 10);
+    }
+});
